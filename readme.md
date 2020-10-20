@@ -24,8 +24,20 @@ or
 
 ## Config
 
-### baseDir: 需要管理的目录名称(如./files 目录), readAll: 是否递归获取所有文件, outputPath: 将读取生成的 files 对象输出的 json 文件路径, port: 默认监听的端口号
+### baseDir: 需要管理的目录名称(如./files 目录)
+
+### readAll: 是否递归获取所有文件
+
+### outputPath: 将读取生成的 files 对象输出的 json 文件路径
+
+### port: 默认监听的端口号
 
 ## Apis
 
-### delete, upload, addDir, removeDir
+### delete
+
+### upload
+
+### addDir
+
+### removeDir
