@@ -1,0 +1,241 @@
+<html>
+  <head>
+    <title>file station</title>
+    <script>
+      function goRoute(url) {
+        location.href = url ? url : location.pathname.split("/").slice(0, -1).join("/");
+      }
+    </script>
+    <style>
+      .files-box {
+        display: flex;
+        margin: 10px;
+        box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.1);
+        min-width: 600px;
+      }
+      .files-dirs {
+        width: 200px;
+        position: relative;
+        border-right: 1px solid #eee;
+        padding: 0 10px;
+        text-align: center;
+        height: 664px;
+        overflow-y: auto;
+      }
+      .files-dirs__item {
+        line-height: 50px;
+        height: 50px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        border-bottom: 1px solid #eee;
+      }
+      .files-dirs__item.active {
+        font-weight: bold;
+      }
+      .route {
+        cursor: pointer;
+      }
+      .files-content {
+        flex: 1;
+        padding: 10px;
+        font-size: 12px;
+      }
+      .files-view {
+        height: 600px;
+        overflow-y: auto;
+      }
+      .files__item {
+        display: inline-block;
+        margin: 5px;
+        text-align: center;
+      }
+      .files__item.active {
+        outline: 2px solid rgba(0, 0, 0, 0.1);
+        box-shadow: 0 0 5px 5px rgba(0, 0, 0, 0.2);
+      }
+      .files__item-name {
+        width: 100px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      .files__item img {
+        width: 100px;
+        height: 100px;
+        object-fit: contain;
+        margin-bottom: 5px;
+      }
+      .confirm-button {
+        margin-top: 10px;
+        text-align: center;
+      }
+      .btn {
+        display: inline-block;
+        padding: 6px 12px;
+        margin-bottom: 0;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 1.42857143;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: middle;
+        -ms-touch-action: manipulation;
+        touch-action: manipulation;
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        background-image: none;
+        border: 1px solid transparent;
+        border-radius: 4px;
+      }
+      .btn-primary {
+        color: #fff;
+        background-color: #337ab7;
+        border-color: #2e6da4;
+      }
+      .btn-success {
+        color: #fff;
+        background-color: #5cb85c;
+        border-color: #4cae4c;
+      }
+      .btn-default {
+        color: #333;
+        background-color: #fff;
+        border-color: #ccc;
+      }
+      .btn-danger {
+        color: #fff;
+        background-color: #d9534f;
+        border-color: #d43f3a;
+      }
+      .btn-warning {
+        color: #fff;
+        background-color: #f0ad4e;
+        border-color: #eea236;
+      }
+    </style>
+  </head>
+  <body>
+    <h3>File Station</h3>
+    <div class="files-box">
+      <div class="files-dirs">
+        <div class="files-dirs__item active">目录</div>
+        <div class="files-dirs__item active route" onclick="goRoute()">..</div>
+        <% files.forEach(item => { %> <% if(item.type === 'dir') { %>
+        <div class="files-dirs__item route" onclick="goRoute('<%= item.url %>')"><%= item.name %></div>
+        <% } %> <% }) %>
+      </div>
+      <div class="files-content">
+        <div class="files-view">
+          <% files.forEach(item => { %> <% if(item.type === 'dir') { %>
+          <div class="files__item route" onclick="goRoute('<%= item.url %>')">
+            <img src="https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1765587956,3413259968&fm=26&gp=0.jpg" alt="" />
+            <div class="files__item-name"><%= item.name %></div>
+          </div>
+          <% } %> <% }) %> <% files.forEach(item => { %> <% if(item.type === 'img') { %>
+          <div class="files__item item" data-url="<%= item.url %>">
+            <img src="<%= item.url %>" alt="" />
+            <div class="files__item-name"><%= item.name %></div>
+          </div>
+          <% } %> <% }) %> <% files.forEach(item => { %> <% if(item.type === 'video') { %>
+          <div class="files__item item" data-url="<%= item.url %>">
+            <img src="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3788264495,2774813401&fm=26&gp=0.jpg" alt="" />
+            <div class="files__item-name"><%= item.name %></div>
+          </div>
+          <% } %> <% }) %> <% files.forEach(item => { %> <% if(item.type === 'other') { %>
+          <div class="files__item item" data-url="<%= item.url %>">
+            <img src="https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=2304701565,2703988045&fm=26&gp=0.jpg" alt="" />
+            <div class="files__item-name"><%= item.name %></div>
+          </div>
+          <% } %> <% }) %>
+        </div>
+        <div class="confirm-button">
+          <button class="btn-default btn" style="width: 100px" onclick="select()">确定</button>
+          <button class="btn-warning btn" style="width: 100px" onclick="del()">删除</button>
+          <label class="btn-primary btn" style="width: 100px; position: relative; box-sizing: border-box">
+            上传
+            <input id="upload-input" multiple type="file" style="position: absolute; left: -9999px; top: -9999px; opacity: 0" onchange="upload()" />
+          </label>
+          <button class="btn-success btn" style="width: 100px" onclick="addDir()">新建文件夹</button>
+          <button class="btn-danger btn" style="width: 100px" onclick="removeDir()">删除文件夹</button>
+        </div>
+      </div>
+    </div>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+      let currentUrl = "";
+      function select() {
+        currentUrl ? alert(currentUrl) : alert("请选择文件");
+      }
+      function del() {
+        if (!currentUrl) {
+          alert("请选择文件");
+        } else if (window.confirm("确定删除" + currentUrl + "文件吗？")) {
+          axios.post("/delete", [currentUrl]).then(res => {
+            if (res.data.s) {
+              location.reload();
+            }
+          });
+        }
+      }
+      function upload() {
+        const files = document.querySelector("#upload-input").files;
+        if (files.length > 0) {
+          for (const file of files) {
+            file.url = decodeURIComponent(location.pathname);
+            const formData = new FormData();
+            formData.append("files", file, decodeURIComponent(location.pathname) + "/" + file.name);
+            axios.post("/upload", formData).then(res => {
+              if (res.data.s) {
+                location.reload();
+              }
+            });
+          }
+        }
+      }
+      function addDir() {
+        const res = window.prompt("请输入文件夹名称", "");
+        if (res) {
+          axios.post("/addDir", { dir: decodeURIComponent(location.pathname) + "/" + res }).then(res => {
+            if (res.data.s) {
+              location.reload();
+            }
+          });
+        }
+      }
+      function removeDir() {
+        const dir = decodeURIComponent(location.pathname);
+        if (window.confirm("确定删除" + dir + "文件夹吗？")) {
+          axios
+            .post("/removeDir", { dir })
+            .then(res => {
+              if (res.data.s) {
+                location.href = "../";
+              }
+            })
+            .catch(err => {
+              if (err.response.status === 403) {
+                alert("没有权限删除" + dir + "文件夹");
+              }
+            });
+        }
+      }
+      window.onload = function () {
+        const items = document.querySelectorAll(".files__item.item");
+        items.forEach(function (item, index) {
+          item.onclick = function (e) {
+            const item = e.path[1];
+            currentUrl = item.dataset.url;
+            items.forEach(element => {
+              element.classList.remove("active");
+            });
+            item.classList.add("active");
+          };
+        });
+      };
+    </script>
+  </body>
+</html>
