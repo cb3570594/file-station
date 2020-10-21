@@ -41,12 +41,20 @@ app
   .use(async ctx => {
     const dirName = decodeURIComponent(path.join("./", ctx.request.url));
     let files = [];
-    const stats = fs.lstatSync(dirName);
-    if (stats.isDirectory()) {
-      files = await initFileJson(dirName);
+    if (dirName === "favicon.ico") {
+      return;
     }
-    await ctx.render("index", {
-      files
-    });
+    try {
+      const stats = fs.lstatSync(dirName);
+      if (stats.isDirectory()) {
+        files = await initFileJson(dirName);
+      }
+      await ctx.render("index", {
+        files
+      });
+    } catch (error) {
+      console.log(dirName);
+      console.log(error);
+    }
   });
 app.listen(config.port);

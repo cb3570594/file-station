@@ -1,5 +1,8 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>file station</title>
     <script>
       function goRoute(url) {
@@ -46,9 +49,9 @@
         overflow-y: auto;
       }
       .files__item {
-        display: inline-block;
         margin: 5px;
         text-align: center;
+        float: left;
       }
       .files__item.active {
         outline: 2px solid rgba(0, 0, 0, 0.1);
@@ -56,15 +59,23 @@
       }
       .files__item-name {
         width: 100px;
+        height: 16px;
+        line-height: 16px;
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
       }
-      .files__item img {
+      .files__item .img-box {
         width: 100px;
         height: 100px;
-        object-fit: contain;
+        line-height: 100px;
         margin-bottom: 5px;
+        text-align: center;
+      }
+      .files__item .img-box img {
+        max-width: 100%;
+        max-height: 100%;
+        vertical-align: middle;
       }
       .confirm-button {
         margin-top: 10px;
@@ -129,25 +140,32 @@
         <% } %> <% }) %>
       </div>
       <div class="files-content">
-        <div class="files-view">
+        <div class="files-view" id="dropbox" draggable>
           <% files.forEach(item => { %> <% if(item.type === 'dir') { %>
           <div class="files__item route" onclick="goRoute('<%= item.url %>')">
-            <img src="https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1765587956,3413259968&fm=26&gp=0.jpg" alt="" />
+            <div class="img-box">
+              <img src="https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1765587956,3413259968&fm=26&gp=0.jpg" alt="" />
+            </div>
             <div class="files__item-name"><%= item.name %></div>
           </div>
           <% } %> <% }) %> <% files.forEach(item => { %> <% if(item.type === 'img') { %>
           <div class="files__item item" data-url="<%= item.url %>">
-            <img src="<%= item.url %>" alt="" />
+            <div class="img-box"><img src="<%= item.url %>" alt="" /></div>
+
             <div class="files__item-name"><%= item.name %></div>
           </div>
           <% } %> <% }) %> <% files.forEach(item => { %> <% if(item.type === 'video') { %>
           <div class="files__item item" data-url="<%= item.url %>">
-            <img src="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3788264495,2774813401&fm=26&gp=0.jpg" alt="" />
+            <div class="img-box">
+              <img src="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3788264495,2774813401&fm=26&gp=0.jpg" alt="" />
+            </div>
             <div class="files__item-name"><%= item.name %></div>
           </div>
           <% } %> <% }) %> <% files.forEach(item => { %> <% if(item.type === 'other') { %>
           <div class="files__item item" data-url="<%= item.url %>">
-            <img src="https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=2304701565,2703988045&fm=26&gp=0.jpg" alt="" />
+            <div class="img-box">
+              <img src="https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=2304701565,2703988045&fm=26&gp=0.jpg" alt="" />
+            </div>
             <div class="files__item-name"><%= item.name %></div>
           </div>
           <% } %> <% }) %>
@@ -166,7 +184,7 @@
     </div>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script>
-      let currentUrl = "";
+      var currentUrl = "";
       function select() {
         currentUrl ? alert(currentUrl) : alert("请选择文件");
       }
@@ -174,7 +192,7 @@
         if (!currentUrl) {
           alert("请选择文件");
         } else if (window.confirm("确定删除" + currentUrl + "文件吗？")) {
-          axios.post("/delete", [currentUrl]).then(res => {
+          axios.post("/delete", [currentUrl]).then(function (res) {
             if (res.data.s) {
               location.reload();
             }
@@ -182,13 +200,17 @@
         }
       }
       function upload() {
-        const files = document.querySelector("#upload-input").files;
+        var files = document.querySelector("#upload-input").files;
+        uploadFn(files);
+      }
+      function uploadFn(files) {
         if (files.length > 0) {
-          for (const file of files) {
+          for (var i = 0; i < files.length; i++) {
+            var file = files[i];
             file.url = decodeURIComponent(location.pathname);
-            const formData = new FormData();
+            var formData = new FormData();
             formData.append("files", file, decodeURIComponent(location.pathname) + "/" + file.name);
-            axios.post("/upload", formData).then(res => {
+            axios.post("/upload", formData).then(function (res) {
               if (res.data.s) {
                 location.reload();
               }
@@ -197,9 +219,9 @@
         }
       }
       function addDir() {
-        const res = window.prompt("请输入文件夹名称", "");
+        var res = window.prompt("请输入文件夹名称", "");
         if (res) {
-          axios.post("/addDir", { dir: decodeURIComponent(location.pathname) + "/" + res }).then(res => {
+          axios.post("/addDir", { dir: decodeURIComponent(location.pathname) + "/" + res }).then(function (res) {
             if (res.data.s) {
               location.reload();
             }
@@ -207,16 +229,16 @@
         }
       }
       function removeDir() {
-        const dir = decodeURIComponent(location.pathname);
+        var dir = decodeURIComponent(location.pathname);
         if (window.confirm("确定删除" + dir + "文件夹吗？")) {
           axios
-            .post("/removeDir", { dir })
-            .then(res => {
+            .post("/removeDir", { dir: dir })
+            .then(function (res) {
               if (res.data.s) {
                 location.href = "../";
               }
             })
-            .catch(err => {
+            .catch(function (err) {
               if (err.response.status === 403) {
                 alert("没有权限删除" + dir + "文件夹");
               }
@@ -224,16 +246,69 @@
         }
       }
       window.onload = function () {
-        const items = document.querySelectorAll(".files__item.item");
-        items.forEach(function (item, index) {
+        var items = document.querySelectorAll(".files__item.item");
+        for (var i = 0; i < items.length; i++) {
+          var item = items[i];
           item.onclick = function (e) {
-            const item = e.path[1];
-            currentUrl = item.dataset.url;
-            items.forEach(element => {
+            currentUrl = this.dataset.url;
+            for (var j = 0; j < items.length; j++) {
+              var element = items[j];
               element.classList.remove("active");
-            });
-            item.classList.add("active");
+            }
+            this.classList.add("active");
           };
+        }
+
+        var dropbox = document.querySelector("#dropbox");
+        document.addEventListener(
+          "dragenter",
+          function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+          },
+          false
+        );
+        document.addEventListener(
+          "dragleave",
+          function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+          },
+          false
+        );
+        dropbox.addEventListener(
+          "dragover",
+          function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+          },
+          false
+        );
+        dropbox.addEventListener(
+          "drop",
+          function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            uploadFn(e.dataTransfer.files);
+          },
+          false
+        );
+
+        // 剪切板上传图片
+        document.addEventListener("paste", function (event) {
+          var items = event.clipboardData && event.clipboardData.items;
+          console.log(items);
+          var files = [];
+          if (items && items.length) {
+            // 检索剪切板items
+            for (var i = 0; i < items.length; i++) {
+              if (items[i].type.indexOf("image") !== -1) {
+                files.push(items[i].getAsFile());
+              }
+            }
+          }
+          uploadFn(files);
+          // 此时file就是剪切板中的图片文件
         });
       };
     </script>
